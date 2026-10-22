@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Surprise</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; background: #000; }
+    #video {
+      display: block;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      object-fit: contain;
+      background: #000;
+    }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #fff;
+      font: 16px system-ui, -apple-system, Segoe UI, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    #overlay[hidden], #continue[hidden] { display: none; }
+    #continue {
+      border: none;
+      border-radius: 14px;
+      padding: 18px 32px;
+      color: #111;
+      background: #fff;
+      font: 700 20px system-ui, -apple-system, Segoe UI, sans-serif;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" playsinline controls preload="auto">
+    <source src="video.mp4" type="video/mp4">
+    Your browser doesn't support HTML5 video.
+  </video>
+  <div id="overlay">
+    <div>
+      <p id="status">Opening...</p>
+      <button id="continue" type="button" hidden>▶ Continue</button>
+    </div>
+  </div>
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const status = document.getElementById('status');
+    const continueButton = document.getElementById('continue');
+
+    // Try to play automatically WITH sound, where the browser allows it.
+    async function attemptAutoplay() {
+      video.muted = false;
+      try {
+        await video.play();
+        overlay.hidden = true;
+      } catch {
+        status.textContent = 'Tap to open';
+        continueButton.hidden = false;
+      }
+    }
+
+    // A real tap/click is allowed to start media with sound in most browsers.
+    continueButton.addEventListener('click', async () => {
+      video.muted = false;
+      try {
+        await video.play();
+        overlay.hidden = true;
+      } catch {
+        status.textContent = 'Playback blocked. Try using the browser video controls.';
+        overlay.hidden = true;
+      }
+    });
+
+    video.addEventListener('error', () => {
+      status.textContent = 'Could not load video.mp4. Check that it is uploaded next to index.html.';
+      continueButton.hidden = true;
+    });
+
+    attemptAutoplay();
+  </script>
+</body>
+</html>
